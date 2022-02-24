@@ -15,6 +15,8 @@ namespace GalleryApp.Droid
         {
             base.OnCreate(savedInstanceState);
 
+            _ = new Bootstrapper();
+
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());

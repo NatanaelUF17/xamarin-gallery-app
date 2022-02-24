@@ -3,6 +3,8 @@ using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using GalleryApp.Droid.Utilities;
+using GalleryApp.Models.Interfaces;
 
 namespace GalleryApp.Droid
 {
@@ -23,6 +25,12 @@ namespace GalleryApp.Droid
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            if (requestCode == 33)
+            {
+                var importer = (PhotoImporter)Resolver.Resolve<IPhotoImporter>();
+                importer.ContinueWithPermission(grantResults[0] == Permission.Granted);
+            }
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }

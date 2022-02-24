@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Threading.Tasks;
+using Android;
+using Android.Content.PM;
 using Android.Database;
 using Android.Provider;
 using GalleryApp.Models;
@@ -50,14 +53,114 @@ namespace GalleryApp.Droid.Utilities
             return true;
         }
 
-        public Task<ObservableCollection<Photo>> Get(int start, int count, Quality quality = Quality.Low)
+        public async Task<bool> Import()
         {
-            throw new NotImplementedException();
+            string[] permissions = { Manifest.Permission.ReadExternalStorage };
+
+            if (MainActivity.Current.CheckSelfPermission(Manifest.Permission.ReadExternalStorage) == Permission.Granted)
+            {
+                ContinueWithPermission(true);
+                return true;
+            }
+
+            MainActivity.Current.RequestPermissions(permissions, 33);
+
+            while (hasCheckedPermission)
+            {
+                await Task.Delay(100);
+            }
+
+            return MainActivity.Current.CheckSelfPermission(Manifest.Permission.ReadExternalStorage) == Permission.Granted;
         }
 
-        public Task<ObservableCollection<Photo>> Get(List<string> filenames, Quality quality = Quality.Low)
+        public async Task<ObservableCollection<Photo>> Get(int start, int count, Quality quality = Quality.Low)
         {
-            throw new NotImplementedException();
+            if (result == null)
+            {
+                var succeded = await Import();
+                if (!succeded)
+                {
+                    return new ObservableCollection<Photo>();
+                }
+            }
+
+            if (result.Length == 0)
+            {
+                return new ObservableCollection<Photo>();
+            }
+
+            Index startIndex = start;
+            Index endIndex = start + count;
+
+            if (endIndex.Value >= result.Length)
+            {
+                endIndex = result.Length - 1;
+            }
+
+            if (startIndex.Value > endIndex.Value)
+            {
+                return new ObservableCollection<Photo>();
+            }
+
+            var photos = new ObservableCollection<Photo>();
+
+            foreach (var path in result[startIndex..endIndex])
+            {
+                var filename = Path.GetFileName(path);
+                var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                var photo = new Photo()
+                {
+                    Filename = filename,
+                    Bytes = memoryStream.ToArray()
+                };
+
+                photos.Add(photo);
+            }
+
+            return photos;
+        }
+
+        public async Task<ObservableCollection<Photo>> Get(List<string> filenames, Quality quality = Quality.Low)
+        {
+            if (result == null)
+            {
+                var succeded = await Import();
+                if (!succeded)
+                {
+                    return new ObservableCollection<Photo>();
+                }
+            }
+
+            if (result.Length == 0)
+            {
+                return new ObservableCollection<Photo>();
+            }
+
+            var photos = new ObservableCollection<Photo>();
+
+            foreach (var path in result)
+            {
+                var filename = Path.GetFileName(path);
+
+                if (!filenames.Contains(filename))
+                {
+                    continue;
+                }
+
+                var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+
+                var photo = new Photo()
+                {
+                    Filename = filename,
+                    Bytes = memoryStream.ToArray(),
+                };
+                photos.Add(photo);
+            }
+            return photos;
         }
     }
 }

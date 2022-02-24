@@ -19,10 +19,12 @@
     <None Remove="Models\" />
     <None Remove="Models\Interfaces\" />
     <None Remove="Models\Enums\" />
+    <None Remove="Views\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Models\Interfaces\" />
     <Folder Include="Models\Enums\" />
+    <Folder Include="Views\" />
   </ItemGroup>
 </Project>

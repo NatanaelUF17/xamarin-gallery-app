@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using GalleryApp.Models.Interfaces;
 using GalleryApp.ViewModels.Helpers;
 using Xamarin.Forms;
 
@@ -34,6 +35,8 @@ namespace GalleryApp
             {
                 ContainerBuilder.RegisterType(type.AsType());
             }
+
+            ContainerBuilder.RegisterType<FormsLocalStorage>().As<ILocalStorage>();
         }
 
         private void FinishInitialization()

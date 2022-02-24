@@ -15,6 +15,7 @@
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2337" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
     <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Models\" />
@@ -24,6 +25,8 @@
     <None Remove="ViewModels\" />
     <None Remove="ViewModels\Helpers\" />
     <None Remove="Autofac" />
+    <None Remove="Converters\" />
+    <None Remove="Newtonsoft.Json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -32,5 +35,6 @@
     <Folder Include="Views\" />
     <Folder Include="ViewModels\" />
     <Folder Include="ViewModels\Helpers\" />
+    <Folder Include="Converters\" />
   </ItemGroup>
 </Project>
